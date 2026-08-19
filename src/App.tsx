@@ -1,15 +1,18 @@
-import { Toaster as Sonner } from "@/components/ui/sonner";
+﻿import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { LanguageProvider } from "@/context/LanguageContext";
 import { AuthProvider, useAuth } from "@/context/AuthContext";
 import { DeliveryProvider } from "@/context/DeliveryContext";
-import { FraudProvider } from "@/context/FraudContext";
+import { NotificationProvider } from "@/context/NotificationContext";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import Deliveries from "./pages/Deliveries";
 import Verify from "./pages/Verify";
-import FraudAlerts from "./pages/FraudAlerts";
+import History from "./pages/History";
+import Notifications from "./pages/Notifications";
+import Performance from "./pages/Performance";
 import AppLayout from "./components/AppLayout";
 import NotFound from "./pages/NotFound";
 
@@ -24,31 +27,35 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
-      <Sonner />
-      <AuthProvider>
-        <DeliveryProvider>
-          <FraudProvider>
-            <BrowserRouter>
-              <Routes>
-                <Route path="/" element={<Login />} />
-                <Route
-                  element={
-                    <ProtectedRoute>
-                      <AppLayout />
-                    </ProtectedRoute>
-                  }
-                >
-                  <Route path="/dashboard" element={<Dashboard />} />
-                  <Route path="/deliveries" element={<Deliveries />} />
-                  <Route path="/verify/:id" element={<Verify />} />
-                  <Route path="/fraud-alerts" element={<FraudAlerts />} />
-                </Route>
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-            </BrowserRouter>
-          </FraudProvider>
-        </DeliveryProvider>
-      </AuthProvider>
+      <Sonner position="top-center" />
+      <LanguageProvider>
+        <AuthProvider>
+          <DeliveryProvider>
+            <NotificationProvider>
+              <BrowserRouter>
+                <Routes>
+                  <Route path="/" element={<Login />} />
+                  <Route
+                    element={
+                      <ProtectedRoute>
+                        <AppLayout />
+                      </ProtectedRoute>
+                    }
+                  >
+                    <Route path="/dashboard" element={<Dashboard />} />
+                    <Route path="/deliveries" element={<Deliveries />} />
+                    <Route path="/verify/:id" element={<Verify />} />
+                    <Route path="/history" element={<History />} />
+                    <Route path="/notifications" element={<Notifications />} />
+                    <Route path="/performance" element={<Performance />} />
+                  </Route>
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+              </BrowserRouter>
+            </NotificationProvider>
+          </DeliveryProvider>
+        </AuthProvider>
+      </LanguageProvider>
     </TooltipProvider>
   </QueryClientProvider>
 );
