@@ -14,7 +14,6 @@ import {
   FileCheck,
   ChevronRight,
   ArrowRight,
-  Send,
   HelpCircle
 } from "lucide-react";
 import { toast } from "sonner";
@@ -31,7 +30,9 @@ const Deliveries = () => {
   const [adminReviewModalTask, setAdminReviewModalTask] = useState<DeliveryTask | null>(null);
   const [adminNotes, setAdminNotes] = useState("");
 
-  const filteredDeliveries = deliveries.filter((d) => {
+  const safeDeliveries = deliveries || [];
+
+  const filteredDeliveries = safeDeliveries.filter((d) => {
     if (activeFilter === "ALL") return true;
     if (activeFilter === "ACTIVE") return ["ACCEPTED", "ON_THE_WAY", "ARRIVED"].includes(d.status);
     if (activeFilter === "PENDING") return d.status === "ASSIGNED";
@@ -102,17 +103,17 @@ const Deliveries = () => {
       {/* Page Heading */}
       <div>
         <h2 className="text-lg font-bold text-foreground">{t("nav_deliveries")}</h2>
-        <p className="text-xs text-muted-foreground">Authorized delivery queue for your assigned route</p>
+        <p className="text-xs text-muted-foreground">Authorized delivery queue for your assigned route ({filteredDeliveries.length} items)</p>
       </div>
 
       {/* Filter Tabs */}
       <div className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-none text-xs font-semibold">
         {[
-          { id: "ALL", label: "All Tasks" },
-          { id: "PENDING", label: "Assigned" },
-          { id: "ACTIVE", label: "In-Transit" },
-          { id: "HOLD", label: "Admin Hold" },
-          { id: "DELIVERED", label: "Completed" },
+          { id: "ALL", label: `All (${safeDeliveries.length})` },
+          { id: "PENDING", label: `Assigned (${safeDeliveries.filter((d) => d.status === "ASSIGNED").length})` },
+          { id: "ACTIVE", label: `In-Transit (${safeDeliveries.filter((d) => ["ACCEPTED", "ON_THE_WAY", "ARRIVED"].includes(d.status)).length})` },
+          { id: "HOLD", label: `Admin Hold (${safeDeliveries.filter((d) => d.verificationRequirement === "ADMINISTRATIVE_HOLD").length})` },
+          { id: "DELIVERED", label: `Completed (${safeDeliveries.filter((d) => d.status === "DELIVERED").length})` },
         ].map((tab) => (
           <button
             key={tab.id}
@@ -215,7 +216,7 @@ const Deliveries = () => {
                     {t("commodities")}:
                   </p>
                   <div className="flex flex-wrap gap-1.5">
-                    {task.commodities.map((item, idx) => (
+                    {(task.commodities || []).map((item, idx) => (
                       <span
                         key={idx}
                         className="text-[10px] font-medium px-2 py-0.5 rounded-lg bg-card text-foreground border border-border"
@@ -278,7 +279,7 @@ const Deliveries = () => {
                         className="px-3.5 py-1.5 rounded-xl bg-warning text-warning-foreground text-xs font-bold shadow-sm hover:opacity-90 transition-all flex items-center gap-1"
                       >
                         <span>{t("btn_mark_arrived")}</span>
-                        <CheckCircle2 className="w-3.5 h-3.5" />
+                        <ChevronRight className="w-3.5 h-3.5" />
                       </button>
                     )}
 

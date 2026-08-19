@@ -28,10 +28,11 @@ const Dashboard = () => {
     ? Math.round((stats.completed / stats.totalAssigned) * 100)
     : 0;
 
-  const recentCompleted = deliveries.filter((d) => d.status === "DELIVERED").slice(0, 3);
+  // Show up to 6 recent verified deliveries
+  const recentCompleted = deliveries.filter((d) => d.status === "DELIVERED").slice(0, 6);
 
   const handleTriggerScenario = (scenario: "CASE_1_NORMAL" | "CASE_2_ADDITIONAL_VERIFICATION" | "CASE_3_ADMIN_HOLD") => {
-    const orderId = triggerDemoScenario(scenario);
+    triggerDemoScenario(scenario);
     if (scenario === "CASE_1_NORMAL") {
       toast.info("Demo Activated: Case 1 - Normal verification order initialized.");
     } else if (scenario === "CASE_2_ADDITIONAL_VERIFICATION") {
@@ -193,11 +194,11 @@ const Dashboard = () => {
         </button>
       )}
 
-      {/* Recent Verified Deliveries */}
+      {/* Recently Verified Deliveries */}
       {recentCompleted.length > 0 && (
-        <div className="space-y-2">
+        <div className="space-y-2.5">
           <div className="flex items-center justify-between">
-            <h3 className="text-xs font-bold text-foreground">Recently Verified Deliveries</h3>
+            <h3 className="text-xs font-bold text-foreground">Recently Verified Deliveries ({recentCompleted.length})</h3>
             <button
               onClick={() => navigate("/history")}
               className="text-[10px] font-semibold text-primary hover:underline"
@@ -218,10 +219,12 @@ const Dashboard = () => {
                   </div>
                   <div>
                     <p className="text-xs font-bold text-foreground">{d.beneficiaryNameMasked} ({d.id})</p>
-                    <p className="text-[10px] text-muted-foreground">{d.verificationProof?.transactionReference}</p>
+                    <p className="text-[10px] text-muted-foreground font-mono truncate max-w-[200px]">
+                      {d.verificationProof?.transactionReference || "Verified e-POD"}
+                    </p>
                   </div>
                 </div>
-                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-success/10 text-success border border-success/20">
+                <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-success/10 text-success border border-success/20 shrink-0">
                   {t("status_DELIVERED")}
                 </span>
               </div>
