@@ -4,7 +4,7 @@ import path from "path";
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  base: "./",
+  base: "/C2R_DeliveryAgent/",
   server: {
     host: "::",
     port: 8080,
